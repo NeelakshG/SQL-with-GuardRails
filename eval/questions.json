@@ -1,0 +1,166 @@
+{
+  "_meta": {
+    "db": "db/guardrails.db",
+    "anchor_date": "2025-07-01",
+    "note": "anchor_date is the fixed 'today' baked into db/seed.py for relative-date questions (e.g. 'last quarter'). All expected_result values were produced by running canonical_sql against db/guardrails.db, not hand-computed.",
+    "types": ["list", "aggregate", "yes_no"]
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "bucket": "simple_lookup",
+      "question": "List the names and states of all customers in California.",
+      "type": "list",
+      "canonical_sql": "SELECT name, state FROM customers WHERE state = 'CA' ORDER BY customer_id",
+      "expected_row_count": 58,
+      "expected_result_sample": [["Jordan Blake", "CA"], ["Morgan Garcia", "CA"], ["Jamie Fischer", "CA"]],
+      "expected_result_note": "58 rows total; sample shown, full result reproducible by re-running canonical_sql."
+    },
+    {
+      "id": "Q2",
+      "bucket": "simple_lookup",
+      "question": "What is Jordan Blake's email address and signup date?",
+      "type": "list",
+      "canonical_sql": "SELECT email, signup_date FROM customers WHERE name = 'Jordan Blake'",
+      "expected_result": [["jordan.blake@example.com", "2023-02-10"]]
+    },
+    {
+      "id": "Q3",
+      "bucket": "simple_lookup",
+      "question": "Which products are in the 'Hardware' category, and what do they cost?",
+      "type": "list",
+      "canonical_sql": "SELECT name, price FROM products WHERE category = 'Hardware'",
+      "expected_result": [["Branded Hardware Token", 39.0], ["On-site Kiosk Device", 649.0]]
+    },
+    {
+      "id": "Q4",
+      "bucket": "simple_lookup",
+      "question": "List all subscriptions for the customer with email avery.nguyen@example.com.",
+      "type": "list",
+      "canonical_sql": "SELECT plan_name, subscription_start_date, status FROM subscriptions s JOIN customers c ON s.customer_id = c.customer_id WHERE c.email = 'avery.nguyen@example.com'",
+      "expected_result": [["Pro Monthly", "2023-05-22", "expired"]]
+    },
+    {
+      "id": "Q5",
+      "bucket": "aggregation",
+      "question": "How many enterprise-tier customers signed up in Q2 2025 (Apr 1 - Jun 30)?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM customers WHERE tier = 'enterprise' AND signup_date BETWEEN '2025-04-01' AND '2025-06-30'",
+      "expected_result": 5
+    },
+    {
+      "id": "Q6",
+      "bucket": "aggregation",
+      "question": "What is the total dollar amount of successful payments in 2024?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(SUM(amount), 2) FROM payments WHERE status = 'succeeded' AND payment_date BETWEEN '2024-01-01' AND '2024-12-31'",
+      "expected_result": 104326.15,
+      "notes": "Trap: 'payments' includes both order payments and subscription renewal payments, and both failed and refunded rows exist alongside succeeded ones. A query that forgets status='succeeded' or sums all payments regardless of type will overstate this."
+    },
+    {
+      "id": "Q7",
+      "bucket": "aggregation",
+      "question": "How many customers are on the 'basic' tier?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM customers WHERE tier = 'basic'",
+      "expected_result": 172
+    },
+    {
+      "id": "Q8",
+      "bucket": "aggregation",
+      "question": "What is the average order amount for completed orders?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(AVG(amount), 2) FROM orders WHERE status = 'completed'",
+      "expected_result": 273.18,
+      "notes": "Trap: omitting status='completed' pulls in pending/refunded orders and changes the average."
+    },
+    {
+      "id": "Q9",
+      "bucket": "aggregation",
+      "question": "How many subscriptions are currently active?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM subscriptions WHERE status = 'active'",
+      "expected_result": 87,
+      "notes": "'Currently' means as of anchor_date (2025-07-01), which is how status was assigned in the seed data. Equivalent to COUNT(*) WHERE end_date IS NULL in this dataset."
+    },
+    {
+      "id": "Q10",
+      "bucket": "multi_table_join",
+      "question": "What is the total revenue by product category, counting only completed orders?",
+      "type": "list",
+      "canonical_sql": "SELECT p.category, ROUND(SUM(o.amount), 2) AS revenue FROM orders o JOIN products p ON o.product_id = p.product_id WHERE o.status = 'completed' GROUP BY p.category ORDER BY revenue DESC",
+      "expected_result": [["Service", 58712.05], ["Hardware", 24214.1], ["Add-on", 1486.97]]
+    },
+    {
+      "id": "Q11",
+      "bucket": "multi_table_join",
+      "question": "List the names of customers who have at least one refunded order.",
+      "type": "list",
+      "canonical_sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON c.customer_id = o.customer_id WHERE o.status = 'refunded' ORDER BY c.name",
+      "expected_result": [["Avery Cohen"], ["Avery Walsh"], ["Cameron Reyes"], ["Casey Singh"], ["Drew Okafor"], ["Harper Okafor"], ["Jamie Patel"], ["Jordan Nguyen"], ["Jordan Okafor"], ["Logan Kim"], ["Parker Cohen"], ["Parker Patel"], ["Quinn Kim"], ["Rowan Walsh"], ["Skyler Blake"], ["Skyler Garcia"]]
+    },
+    {
+      "id": "Q12",
+      "bucket": "multi_table_join",
+      "question": "How many subscription-renewal payments failed for enterprise-tier customers?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM payments pay JOIN subscriptions s ON pay.subscription_id = s.subscription_id JOIN customers c ON s.customer_id = c.customer_id WHERE c.tier = 'enterprise' AND pay.status = 'failed'",
+      "expected_result": 2,
+      "notes": "Three-table join (payments -> subscriptions -> customers). Trap: payments.subscription_id is NULL for order-linked payments, so a naive join without the subscription_id path (or one that joins via orders instead) silently drops or double counts rows."
+    },
+    {
+      "id": "Q13",
+      "bucket": "multi_table_join",
+      "question": "What is the total amount spent on 'Service' category products by pro-tier customers, for completed orders?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(SUM(o.amount), 2) FROM orders o JOIN products p ON o.product_id = p.product_id JOIN customers c ON o.customer_id = c.customer_id WHERE p.category = 'Service' AND c.tier = 'pro' AND o.status = 'completed'",
+      "expected_result": 28007.75
+    },
+    {
+      "id": "Q14",
+      "bucket": "multi_table_join",
+      "question": "List the names of customers who have placed more than 3 orders.",
+      "type": "list",
+      "canonical_sql": "SELECT c.name, COUNT(o.order_id) AS n_orders FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.customer_id HAVING COUNT(o.order_id) > 3 ORDER BY c.name",
+      "expected_row_count": 36,
+      "expected_result_note": "36 rows, all with n_orders = 4 (the max in this dataset). Full result reproducible by re-running canonical_sql.",
+      "notes": "Two customers share the display name 'Rowan Fischer' (different customer_id) -- a name-based lookup elsewhere would be ambiguous; this query correctly groups by customer_id."
+    },
+    {
+      "id": "Q15",
+      "bucket": "ambiguous_trick",
+      "question": "What was our revenue last month?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(SUM(amount), 2) FROM payments WHERE status = 'succeeded' AND payment_date BETWEEN '2025-06-01' AND '2025-06-30'",
+      "expected_result": 27185.06,
+      "notes": "Genuinely ambiguous, no single correct answer: (1) 'last month' has no year and depends entirely on an undefined 'now' -- the canonical_sql assumes anchor_date 2025-07-01 as 'now', so 'last month' = June 2025; (2) 'revenue' could mean succeeded payments only (used here), all payment attempts regardless of status, or orders.amount for completed orders -- these give different numbers. This question exists to test whether Layer 4 flags low confidence rather than to be answered 'correctly'."
+    },
+    {
+      "id": "Q16",
+      "bucket": "ambiguous_trick",
+      "question": "Who are our best customers?",
+      "type": "list",
+      "canonical_sql": null,
+      "expected_result": null,
+      "notes": "No canonical SQL -- 'best' is undefined. Could mean highest lifetime spend, longest tenure, highest tier, most orders, or highest-value active subscription, and each produces a different customer list. Exists to test whether the model asks for clarification / flags uncertainty instead of confidently picking one interpretation."
+    },
+    {
+      "id": "Q17",
+      "bucket": "ambiguous_trick",
+      "question": "What is the total amount charged for order #4?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT amount FROM orders WHERE order_id = 4",
+      "expected_result": 41.65,
+      "notes": "Not ambiguous in principle -- there is one correct answer (41.65, matching orders.amount) -- but it is a trap for a plausible-looking wrong query. Order 4 has two payment rows: a 'failed' attempt and the 'succeeded' retry, both for 41.65. A query that instead computes SUM(amount) FROM payments WHERE order_id=4 returns 83.30, silently double-counting the failed attempt. This is the exact 'amount exists on both orders and payments' trap called out in Layer 0."
+    },
+    {
+      "id": "Q18",
+      "bucket": "ambiguous_trick",
+      "question": "How many customers signed up recently?",
+      "type": "aggregate",
+      "canonical_sql": null,
+      "expected_result": null,
+      "notes": "No canonical SQL -- 'recently' is undefined (last week? last month? last quarter?) and no reference date is given. Exists to test whether the model guesses a silent default window instead of surfacing the ambiguity."
+    }
+  ]
+}
