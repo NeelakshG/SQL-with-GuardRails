@@ -1,0 +1,7 @@
+# Claude Code local files
+.claude/
+CLAUDE.md
+.mcp.json
+
+# Generated build artifact - reproducible via db/seed.py
+db/guardrails.db
