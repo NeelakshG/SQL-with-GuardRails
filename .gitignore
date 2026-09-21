@@ -5,3 +5,10 @@ CLAUDE.md
 
 # Generated build artifact - reproducible via db/seed.py
 db/guardrails.db
+
+# Personal interview prep (study guides, doc/PDF builders) and runtime logs
+interview_prep/
+logs/
+
+# Python bytecode cache
+__pycache__/
