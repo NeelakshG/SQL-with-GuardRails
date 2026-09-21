@@ -1,0 +1,980 @@
+{
+  "model": "qwen2.5-coder:3b",
+  "results": [
+    {
+      "id": "Q1",
+      "bucket": "simple_lookup",
+      "question": "List the names and states of all customers in California.",
+      "type": "list",
+      "canonical_sql": "SELECT name, state FROM customers WHERE state = 'CA' ORDER BY customer_id",
+      "generated_sql": "SELECT name, state FROM customers WHERE state = 'California'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": [],
+        "row_count": 0,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 0.65,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 0.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query selects the 'name' and 'state' columns from the 'customers' table where the 'state' column matches 'California'. It filters the rows based on the condition that the state is California and returns the names of customers in that state.",
+          "raw_response": "{\n  \"explanation\": \"This query selects the 'name' and 'state' columns from the 'customers' table where the 'state' column matches 'California'. It filters the rows based on the condition that the state is California and returns the names of customers in that state.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation accurately describes the SQL query and its purpose, identifying the columns to select, the table to query, and the condition to filter the results.",
+          "raw_response": "{\n  \"score\": 1.0,\n  \"reasoning\": \"The explanation accurately describes the SQL query and its purpose, identifying the columns to select, the table to query, and the condition to filter the results.\"\n}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": true,
+          "issue": "No records returned for California",
+          "confidence_correct": 0.8,
+          "raw_response": "{\"has_issue\": true, \"issue\": \"No records returned for California\", \"confidence_correct\": 0.8}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q2",
+      "bucket": "simple_lookup",
+      "question": "What is Jordan Blake's email address and signup date?",
+      "type": "list",
+      "canonical_sql": "SELECT email, signup_date FROM customers WHERE name = 'Jordan Blake'",
+      "generated_sql": "SELECT email, signup_date FROM customers WHERE name = 'Jordan Blake'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": [
+          [
+            "jordan.blake@example.com",
+            "2023-02-10"
+          ]
+        ],
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": true,
+      "confidence": 0.925,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 0.5,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This SQL query selects the email and signup_date columns from the 'customers' table for the customer named 'Jordan Blake'. It does not apply any filters or aggregations.",
+          "raw_response": "{\n  \"explanation\": \"This SQL query selects the email and signup_date columns from the 'customers' table for the customer named 'Jordan Blake'. It does not apply any filters or aggregations.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 0.5,
+          "reasoning": "The explanation does not specifically address Jordan Blake's email and signup date.",
+          "raw_response": "{\n  \"score\": 0.5,\n  \"reasoning\": \"The explanation does not specifically address Jordan Blake's email and signup date.\"\n}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q3",
+      "bucket": "simple_lookup",
+      "question": "Which products are in the 'Hardware' category, and what do they cost?",
+      "type": "list",
+      "canonical_sql": "SELECT name, price FROM products WHERE category = 'Hardware'",
+      "generated_sql": "SELECT product_id, name, price FROM products WHERE category = 'Hardware'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": [
+          [
+            7,
+            "Branded Hardware Token",
+            39.0
+          ],
+          [
+            8,
+            "On-site Kiosk Device",
+            649.0
+          ]
+        ],
+        "row_count": 2,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 1.0,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query selects the product_id, name, and price of products from the 'products' table where the category is 'Hardware'. It filters the results to only include products in the 'Hardware' category and returns the selected columns.",
+          "raw_response": "{\"explanation\": \"This query selects the product_id, name, and price of products from the 'products' table where the category is 'Hardware'. It filters the results to only include products in the 'Hardware' category and returns the selected columns.\"}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation correctly identifies the product category and the cost from the 'Hardware' category.",
+          "raw_response": "{\"score\": 1.0, \"reasoning\": \"The explanation correctly identifies the product category and the cost from the 'Hardware' category.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q4",
+      "bucket": "simple_lookup",
+      "question": "List all subscriptions for the customer with email avery.nguyen@example.com.",
+      "type": "list",
+      "canonical_sql": "SELECT plan_name, subscription_start_date, status FROM subscriptions s JOIN customers c ON s.customer_id = c.customer_id WHERE c.email = 'avery.nguyen@example.com'",
+      "generated_sql": "SELECT s.subscription_id, s.plan_name, s.subscription_start_date, s.end_date, s.status FROM subscriptions s INNER JOIN customers c ON s.customer_id = c.customer_id WHERE c.email = 'avery.nguyen@example.com'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": [
+          [
+            2,
+            "Pro Monthly",
+            "2023-05-22",
+            "2023-12-17",
+            "expired"
+          ]
+        ],
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 0.94,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 0.6,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query retrieves details about subscriptions for a customer with the email 'avery.nguyen@example.com'. It selects the subscription ID, plan name, start date, end date, and status from the 'subscriptions' table. The query joins this table with the 'customers' table based on the customer ID, which ensures that only subscriptions associated with the specified customer are returned.",
+          "raw_response": "{\n  \"explanation\": \"This query retrieves details about subscriptions for a customer with the email 'avery.nguyen@example.com'. It selects the subscription ID, plan name, start date, end date, and status from the 'subscriptions' table. The query joins this table with the 'customers' table based on the customer ID, which ensures that only subscriptions associated with the specified customer are returned.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 0.6,
+          "reasoning": "While the explanation touches on the correct table and columns, it misses specifying the condition for the customer email, which is essential for the query to return the correct results.",
+          "raw_response": "{\"score\": 0.6, \"reasoning\": \"While the explanation touches on the correct table and columns, it misses specifying the condition for the customer email, which is essential for the query to return the correct results.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q5",
+      "bucket": "aggregation",
+      "question": "How many enterprise-tier customers signed up in Q2 2025 (Apr 1 - Jun 30)?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM customers WHERE tier = 'enterprise' AND signup_date BETWEEN '2025-04-01' AND '2025-06-30'",
+      "generated_sql": "SELECT COUNT(*) FROM customers WHERE tier = 'enterprise' AND signup_date BETWEEN '2025-04-01' AND '2025-06-30'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": 5,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": true,
+      "confidence": 1.0,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query counts the number of customers who belong to the 'enterprise' tier and signed up between April 1, 2025, and June 30, 2025.",
+          "raw_response": "{\n  \"explanation\": \"This query counts the number of customers who belong to the 'enterprise' tier and signed up between April 1, 2025, and June 30, 2025.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation accurately describes the purpose of the SQL query, which counts the number of 'enterprise-tier' customers signed up between April 1, 2025, and June 30, 2025.",
+          "raw_response": "{\"score\": 1.0, \"reasoning\": \"The explanation accurately describes the purpose of the SQL query, which counts the number of 'enterprise-tier' customers signed up between April 1, 2025, and June 30, 2025.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\n  \"has_issue\": false,\n  \"issue\": null,\n  \"confidence_correct\": 1.0\n}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q6",
+      "bucket": "aggregation",
+      "question": "What is the total dollar amount of successful payments in 2024?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(SUM(amount), 2) FROM payments WHERE status = 'succeeded' AND payment_date BETWEEN '2024-01-01' AND '2024-12-31'",
+      "generated_sql": "SELECT SUM(amount) AS total_amount FROM payments WHERE YEAR(payment_date) = 2024 AND status = 'succeeded'",
+      "execution": {
+        "executed": false,
+        "error": "no such function: YEAR",
+        "result": null,
+        "row_count": null
+      },
+      "correct": false,
+      "confidence": 0.0,
+      "needs_review": true,
+      "confidence_breakdown": null,
+      "signals": {
+        "explanation": null,
+        "judge": null,
+        "shape": {
+          "ok": false,
+          "reason": "no such function: YEAR"
+        },
+        "critic": null
+      }
+    },
+    {
+      "id": "Q7",
+      "bucket": "aggregation",
+      "question": "How many customers are on the 'basic' tier?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM customers WHERE tier = 'basic'",
+      "generated_sql": "SELECT COUNT(*) FROM customers WHERE tier = 'basic'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": 172,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": true,
+      "confidence": 1.0,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query counts the number of customers who have a tier of 'basic'. It reads from the 'customers' table and applies a filter to only count rows where the 'tier' column is 'basic'.",
+          "raw_response": "{\n  \"explanation\": \"This query counts the number of customers who have a tier of 'basic'. It reads from the 'customers' table and applies a filter to only count rows where the 'tier' column is 'basic'.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation correctly identifies that the query counts customers on the 'basic' tier by filtering the 'tier' column in the 'customers' table.",
+          "raw_response": "{\"score\": 1.0, \"reasoning\": \"The explanation correctly identifies that the query counts customers on the 'basic' tier by filtering the 'tier' column in the 'customers' table.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q8",
+      "bucket": "aggregation",
+      "question": "What is the average order amount for completed orders?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(AVG(amount), 2) FROM orders WHERE status = 'completed'",
+      "generated_sql": "SELECT AVG(amount) AS average_order_amount FROM orders WHERE status = 'completed'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": 273.18161812297734,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 1.0,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "The query calculates the average order amount for completed orders. It reads the 'orders' table, filters for orders with a 'status' of 'completed', and computes the average of the 'amount' column.",
+          "raw_response": "{\n  \"explanation\": \"The query calculates the average order amount for completed orders. It reads the 'orders' table, filters for orders with a 'status' of 'completed', and computes the average of the 'amount' column.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation accurately describes the purpose of the SQL query, which is to calculate the average order amount for completed orders. It correctly identifies the table ('orders'), the condition for filtering completed orders ('status = 'completed'), and the column to compute the average ('amount').",
+          "raw_response": "{\n  \"score\": 1.0,\n  \"reasoning\": \"The explanation accurately describes the purpose of the SQL query, which is to calculate the average order amount for completed orders. It correctly identifies the table ('orders'), the condition for filtering completed orders ('status = 'completed'), and the column to compute the average ('amount').\"\n}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q9",
+      "bucket": "aggregation",
+      "question": "How many subscriptions are currently active?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM subscriptions WHERE status = 'active'",
+      "generated_sql": "SELECT COUNT(subscription_id) AS active_subscriptions FROM subscriptions WHERE status = 'active'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": 87,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": true,
+      "confidence": 1.0,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query counts the number of active subscriptions in the 'subscriptions' table where the 'status' is 'active'. It selects the 'subscription_id' column, groups the results by 'subscription_id', and counts the number of rows in each group, which represents the active subscriptions.",
+          "raw_response": "{\"explanation\": \"This query counts the number of active subscriptions in the 'subscriptions' table where the 'status' is 'active'. It selects the 'subscription_id' column, groups the results by 'subscription_id', and counts the number of rows in each group, which represents the active subscriptions.\"}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation accurately describes the SQL query and explains what it computes, which is the number of active subscriptions.",
+          "raw_response": "{\"score\": 1.0, \"reasoning\": \"The explanation accurately describes the SQL query and explains what it computes, which is the number of active subscriptions.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q10",
+      "bucket": "multi_table_join",
+      "question": "What is the total revenue by product category, counting only completed orders?",
+      "type": "list",
+      "canonical_sql": "SELECT p.category, ROUND(SUM(o.amount), 2) AS revenue FROM orders o JOIN products p ON o.product_id = p.product_id WHERE o.status = 'completed' GROUP BY p.category ORDER BY revenue DESC",
+      "generated_sql": "SELECT p.category, SUM(o.amount) AS total_revenue FROM orders o JOIN products p ON o.product_id = p.product_id WHERE o.status = 'completed' GROUP BY p.category",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": [
+          [
+            "Add-on",
+            1486.97
+          ],
+          [
+            "Hardware",
+            24214.1
+          ],
+          [
+            "Service",
+            58712.05
+          ]
+        ],
+        "row_count": 3,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 1.0,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "The query selects the category of products and calculates the total revenue for completed orders. It joins the 'orders' table with the 'products' table on the product ID, filters for orders that are completed, and groups the results by product category, summing the amounts from the orders table to get the total revenue for each category.",
+          "raw_response": "{\"explanation\": \"The query selects the category of products and calculates the total revenue for completed orders. It joins the 'orders' table with the 'products' table on the product ID, filters for orders that are completed, and groups the results by product category, summing the amounts from the orders table to get the total revenue for each category.\"}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation accurately describes what the SQL query computes: the total revenue by product category for completed orders, which is exactly what the question asks.",
+          "raw_response": "{\"score\": 1.0, \"reasoning\": \"The explanation accurately describes what the SQL query computes: the total revenue by product category for completed orders, which is exactly what the question asks.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\n  \"has_issue\": false,\n  \"issue\": null,\n  \"confidence_correct\": 1.0\n}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q11",
+      "bucket": "multi_table_join",
+      "question": "List the names of customers who have at least one refunded order.",
+      "type": "list",
+      "canonical_sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON c.customer_id = o.customer_id WHERE o.status = 'refunded' ORDER BY c.name",
+      "generated_sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON c.customer_id = o.customer_id JOIN payments p ON o.order_id = p.order_id WHERE p.status = 'refunded'",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": [
+          [
+            "Harper Okafor"
+          ],
+          [
+            "Drew Okafor"
+          ],
+          [
+            "Jordan Okafor"
+          ],
+          [
+            "Skyler Blake"
+          ],
+          [
+            "Avery Cohen"
+          ],
+          [
+            "Jamie Patel"
+          ],
+          [
+            "Rowan Walsh"
+          ],
+          [
+            "Casey Singh"
+          ],
+          [
+            "Logan Kim"
+          ],
+          [
+            "Parker Cohen"
+          ],
+          [
+            "Jordan Nguyen"
+          ],
+          [
+            "Skyler Garcia"
+          ],
+          [
+            "Cameron Reyes"
+          ],
+          [
+            "Parker Patel"
+          ],
+          [
+            "Quinn Kim"
+          ]
+        ],
+        "row_count": 15,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 0.925,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 0.5,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query selects distinct customer names from the 'customers' table, where each customer has placed an order that has been refunded. It joins the 'customers' table with the 'orders' table on customer ID, then joins the 'orders' table with the 'payments' table on order ID. The WHERE clause filters the results to only include orders that have a 'refunded' status.",
+          "raw_response": "{\n  \"explanation\": \"This query selects distinct customer names from the 'customers' table, where each customer has placed an order that has been refunded. It joins the 'customers' table with the 'orders' table on customer ID, then joins the 'orders' table with the 'payments' table on order ID. The WHERE clause filters the results to only include orders that have a 'refunded' status.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 0.5,
+          "reasoning": "The explanation discusses refund statuses but does not mention customer names.",
+          "raw_response": "{\"score\": 0.5, \"reasoning\": \"The explanation discusses refund statuses but does not mention customer names.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\n  \"has_issue\": false,\n  \"issue\": null,\n  \"confidence_correct\": 1.0\n}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q12",
+      "bucket": "multi_table_join",
+      "question": "How many subscription-renewal payments failed for enterprise-tier customers?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT COUNT(*) FROM payments pay JOIN subscriptions s ON pay.subscription_id = s.subscription_id JOIN customers c ON s.customer_id = c.customer_id WHERE c.tier = 'enterprise' AND pay.status = 'failed'",
+      "generated_sql": "SELECT COUNT(payment_id) AS failed_payments FROM payments INNER JOIN subscriptions ON payments.subscription_id = subscriptions.subscription_id INNER JOIN customers ON subscriptions.customer_id = customers.customer_id WHERE customers.tier = 'enterprise' AND payments.status = 'failed';",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": 2,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": true,
+      "confidence": 1.0,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 1.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query counts the number of failed payments made by customers who have an 'enterprise' tier. It reads from the 'payments', 'subscriptions', and 'customers' tables, filters the results to include only those customers with an 'enterprise' tier and failed payments, and aggregates the count of failed payments.",
+          "raw_response": "{\n  \"explanation\": \"This query counts the number of failed payments made by customers who have an 'enterprise' tier. It reads from the 'payments', 'subscriptions', and 'customers' tables, filters the results to include only those customers with an 'enterprise' tier and failed payments, and aggregates the count of failed payments.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 1.0,
+          "reasoning": "The explanation accurately describes the task of counting failed subscription-renewal payments for enterprise-tier customers, and the query provided matches this description. ",
+          "raw_response": "{\n  \"score\": 1.0,\n  \"reasoning\": \"The explanation accurately describes the task of counting failed subscription-renewal payments for enterprise-tier customers, and the query provided matches this description. \"\n}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q13",
+      "bucket": "multi_table_join",
+      "question": "What is the total amount spent on 'Service' category products by pro-tier customers, for completed orders?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(SUM(o.amount), 2) FROM orders o JOIN products p ON o.product_id = p.product_id JOIN customers c ON o.customer_id = c.customer_id WHERE p.category = 'Service' AND c.tier = 'pro' AND o.status = 'completed'",
+      "generated_sql": "SELECT SUM(p.amount) AS total_spent FROM orders AS o JOIN products AS p ON o.product_id = p.product_id JOIN customers AS c ON o.customer_id = c.customer_id JOIN subscriptions AS s ON c.customer_id = s.customer_id WHERE p.category = 'Service' AND c.tier = 'pro' AND o.status = 'completed'",
+      "execution": {
+        "executed": false,
+        "error": "no such column: p.amount",
+        "result": null,
+        "row_count": null
+      },
+      "correct": false,
+      "confidence": 0.0,
+      "needs_review": true,
+      "confidence_breakdown": null,
+      "signals": {
+        "explanation": null,
+        "judge": null,
+        "shape": {
+          "ok": false,
+          "reason": "no such column: p.amount"
+        },
+        "critic": null
+      }
+    },
+    {
+      "id": "Q14",
+      "bucket": "multi_table_join",
+      "question": "List the names of customers who have placed more than 3 orders.",
+      "type": "list",
+      "canonical_sql": "SELECT c.name, COUNT(o.order_id) AS n_orders FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.customer_id HAVING COUNT(o.order_id) > 3 ORDER BY c.name",
+      "generated_sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.customer_id HAVING COUNT(o.order_id) > 3",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": [
+          [
+            "Jordan Blake"
+          ],
+          [
+            "Avery Nguyen"
+          ],
+          [
+            "Morgan Patel"
+          ],
+          [
+            "Jamie Rivera"
+          ],
+          [
+            "Skyler Diaz"
+          ],
+          [
+            "Kendall Novak"
+          ],
+          [
+            "Drew Brooks"
+          ],
+          [
+            "Skyler Kim"
+          ],
+          [
+            "Harper Okafor"
+          ],
+          [
+            "Jamie Garcia"
+          ],
+          [
+            "Skyler Walsh"
+          ],
+          [
+            "Casey Nguyen"
+          ],
+          [
+            "Harper Diaz"
+          ],
+          [
+            "Sam Brooks"
+          ],
+          [
+            "Drew Kim"
+          ],
+          [
+            "Quinn Fischer"
+          ],
+          [
+            "Morgan Diaz"
+          ],
+          [
+            "Rowan Blake"
+          ],
+          [
+            "Elliot Blake"
+          ],
+          [
+            "Cameron Fischer"
+          ],
+          [
+            "Reese Brooks"
+          ],
+          [
+            "Reese Singh"
+          ],
+          [
+            "Riley Rivera"
+          ],
+          [
+            "Avery Walsh"
+          ],
+          [
+            "Drew Walsh"
+          ],
+          [
+            "Casey Patel"
+          ],
+          [
+            "Logan Kim"
+          ],
+          [
+            "Parker Cohen"
+          ],
+          [
+            "Parker Walsh"
+          ],
+          [
+            "Skyler Novak"
+          ],
+          [
+            "Rowan Fischer"
+          ],
+          [
+            "Skyler Brooks"
+          ],
+          [
+            "Elliot Okafor"
+          ],
+          [
+            "Quinn Okafor"
+          ],
+          [
+            "Quinn Kim"
+          ]
+        ],
+        "row_count": 35,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 0.925,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 0.5,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query retrieves distinct names from the customers table. It joins the customers table with the orders table based on the customer_id. It groups the results by customer_id to count the number of orders each customer has. The query then filters the results to include only those customers who have placed more than 3 orders. The DISTINCT keyword is used to ensure that each customer name appears only once in the result set.",
+          "raw_response": "{\n  \"explanation\": \"This query retrieves distinct names from the customers table. It joins the customers table with the orders table based on the customer_id. It groups the results by customer_id to count the number of orders each customer has. The query then filters the results to include only those customers who have placed more than 3 orders. The DISTINCT keyword is used to ensure that each customer name appears only once in the result set.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 0.5,
+          "reasoning": "The explanation does not fully answer the question. The explanation talks about retrieving distinct customer names but does not mention that it counts the number of orders each customer has.",
+          "raw_response": "{\n  \"score\": 0.5,\n  \"reasoning\": \"The explanation does not fully answer the question. The explanation talks about retrieving distinct customer names but does not mention that it counts the number of orders each customer has.\"\n}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q15",
+      "bucket": "ambiguous_trick",
+      "question": "What was our revenue last month?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT ROUND(SUM(amount), 2) FROM payments WHERE status = 'succeeded' AND payment_date BETWEEN '2025-06-01' AND '2025-06-30'",
+      "generated_sql": "SELECT SUM(amount) AS revenue_last_month FROM orders WHERE order_date >= DATE('now', '-1 month') AND order_date < DATE('now', '-1 month', '1 day')",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": null,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": false,
+      "confidence": 0.925,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 0.5,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query calculates the total revenue for the last month by summing the 'amount' column from the 'orders' table. It filters the orders to include only those placed in the last month, using the date functions to determine the start and end dates of the last month.",
+          "raw_response": "{\n  \"explanation\": \"This query calculates the total revenue for the last month by summing the 'amount' column from the 'orders' table. It filters the orders to include only those placed in the last month, using the date functions to determine the start and end dates of the last month.\"\n}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 0.5,
+          "reasoning": "While the explanation provides some relevant information, it does not explicitly answer the question 'What was our revenue last month?'",
+          "raw_response": "{\n  \"score\": 0.5,\n  \"reasoning\": \"While the explanation provides some relevant information, it does not explicitly answer the question 'What was our revenue last month?'\"\n}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q16",
+      "bucket": "ambiguous_trick",
+      "question": "Who are our best customers?",
+      "type": "list",
+      "canonical_sql": null,
+      "generated_sql": "SELECT c.name FROM customers c ORDER BY SUM(o.amount) DESC LIMIT 1;",
+      "execution": {
+        "executed": false,
+        "error": "no such column: o.amount",
+        "result": null,
+        "row_count": null
+      },
+      "correct": null,
+      "confidence": 0.0,
+      "needs_review": true,
+      "confidence_breakdown": null,
+      "signals": {
+        "explanation": null,
+        "judge": null,
+        "shape": {
+          "ok": false,
+          "reason": "no such column: o.amount"
+        },
+        "critic": null
+      }
+    },
+    {
+      "id": "Q17",
+      "bucket": "ambiguous_trick",
+      "question": "What is the total amount charged for order #4?",
+      "type": "aggregate",
+      "canonical_sql": "SELECT amount FROM orders WHERE order_id = 4",
+      "generated_sql": "SELECT SUM(amount) AS total_amount FROM orders WHERE order_id = 4",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": 41.65,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": true,
+      "confidence": 0.85,
+      "needs_review": false,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 0.0,
+        "critic_score": 1.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query calculates the total amount of orders with a specific order_id. It reads the 'orders' table, applies a filter to find rows where the 'order_id' is 4, and then sums up the 'amount' column from those rows. The result is returned as 'total_amount'.",
+          "raw_response": "{\"explanation\": \"This query calculates the total amount of orders with a specific order_id. It reads the 'orders' table, applies a filter to find rows where the 'order_id' is 4, and then sums up the 'amount' column from those rows. The result is returned as 'total_amount'.\"}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 0.0,
+          "reasoning": "The explanation describes how to calculate the total amount charged for a specific order_id, but it does not answer the question about order #4. The question asks specifically about order #4, but the explanation does not specify this order by number.",
+          "raw_response": "{\"score\": 0.0, \"reasoning\": \"The explanation describes how to calculate the total amount charged for a specific order_id, but it does not answer the question about order #4. The question asks specifically about order #4, but the explanation does not specify this order by number.\"}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": false,
+          "issue": null,
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": false, \"issue\": null, \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    },
+    {
+      "id": "Q18",
+      "bucket": "ambiguous_trick",
+      "question": "How many customers signed up recently?",
+      "type": "aggregate",
+      "canonical_sql": null,
+      "generated_sql": "SELECT COUNT(customer_id) FROM customers WHERE signup_date >= DATE('now', '-30 days')",
+      "execution": {
+        "executed": true,
+        "error": null,
+        "result": 0,
+        "row_count": 1,
+        "truncated": false
+      },
+      "correct": null,
+      "confidence": 0.5,
+      "needs_review": true,
+      "confidence_breakdown": {
+        "shape_score": 1.0,
+        "judge_score": 0.0,
+        "critic_score": 0.0
+      },
+      "signals": {
+        "explanation": {
+          "explanation": "This query counts the number of customer_id entries in the customers table where the signup_date is within the last 30 days.",
+          "raw_response": "{\"explanation\": \"This query counts the number of customer_id entries in the customers table where the signup_date is within the last 30 days.\"}",
+          "parse_error": null
+        },
+        "judge": {
+          "score": 0.0,
+          "reasoning": "The explanation does not directly answer the question 'How many customers signed up recently?'. The query counts the number of customer_id entries where the signup_date is within the last 30 days, but it does not specify that these customers signed up recently.",
+          "raw_response": "{\n  \"score\": 0.0,\n  \"reasoning\": \"The explanation does not directly answer the question 'How many customers signed up recently?'. The query counts the number of customer_id entries where the signup_date is within the last 30 days, but it does not specify that these customers signed up recently.\"\n}",
+          "parse_error": null
+        },
+        "shape": {
+          "ok": true,
+          "reason": null
+        },
+        "critic": {
+          "has_issue": true,
+          "issue": "Filtering on the wrong column (signup_date) instead of the expected column (signup_date).",
+          "confidence_correct": 1.0,
+          "raw_response": "{\"has_issue\": true, \"issue\": \"Filtering on the wrong column (signup_date) instead of the expected column (signup_date).\", \"confidence_correct\": 1.0}",
+          "parse_error": null
+        }
+      }
+    }
+  ]
+}
