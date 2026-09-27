@@ -20,7 +20,7 @@ def _groq_key():
 
 def default_model():
     return os.environ.get("LLM_MODEL") or (
-        "llama-3.3-70b-versatile" if _groq_key() else "qwen2.5-coder:3b"
+        "openai/gpt-oss-20b" if _groq_key() else "qwen2.5-coder:3b"
     )
 
 

@@ -24,7 +24,7 @@ python -m uvicorn api.main:app --port 8000
 python -m streamlit run ui/app.py
 ```
 
-To use Groq's hosted API instead of local Ollama, set `GROQ_API_KEY` (optionally `LLM_MODEL`, default `llama-3.3-70b-versatile`). The deployed Streamlit app reads it from the app's secrets.
+To use Groq's hosted API instead of local Ollama, set `GROQ_API_KEY` (optionally `LLM_MODEL`, default `openai/gpt-oss-20b`). The deployed Streamlit app reads it from the app's secrets.
 
 To re-run the full eval set end to end (Layers 1-4, with grading): `python verification/run_layer4_eval.py`
 
