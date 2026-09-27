@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from urllib.error import HTTPError
 
 import pandas as pd
 import requests
@@ -49,7 +50,10 @@ if ask_clicked and question.strip():
                 from pipeline import answer_question
                 result = answer_question(question)
             except OSError as e:
-                st.error(f"LLM request failed (check GROQ_API_KEY, or that Ollama is running locally): {e}")
+                if isinstance(e, HTTPError) and e.code == 429:
+                    st.warning("The demo is busy (free LLM rate limit reached) — please try again in a minute.")
+                else:
+                    st.error(f"LLM request failed (check GROQ_API_KEY, or that Ollama is running locally): {e}")
 
     if result is not None:
         if result["blocked"]:
