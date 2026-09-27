@@ -1,12 +1,10 @@
 import json
 import os
-import urllib.request
+
+from llm_client import MODEL, call_llm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCHEMA_PATH = os.path.join(HERE, "..", "db", "schema.sql")
-
-OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
-MODEL = "qwen2.5-coder:3b"
 
 SYSTEM_PROMPT_TEMPLATE = """You are a SQL generator for a SQLite database. Given a natural-language question, produce a single read-only SELECT query that answers it.
 
@@ -35,24 +33,9 @@ def build_system_prompt():
 
 
 def generate_sql(question, model=MODEL):
-    """Calls the local Ollama model and returns a dict with the parsed
-    sql/reasoning plus the raw response (for debugging malformed output)."""
-    payload = {
-        "model": model,
-        "prompt": question,
-        "system": build_system_prompt(),
-        "format": "json",
-        "stream": False,
-    }
-    req = urllib.request.Request(
-        OLLAMA_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        body = json.loads(resp.read())
-
-    raw_text = body.get("response", "")
+    """Calls the LLM and returns a dict with the parsed sql/reasoning plus
+    the raw response (for debugging malformed output)."""
+    raw_text = call_llm(build_system_prompt(), question, model)
     result = {"sql": None, "reasoning": None, "type": None, "raw_response": raw_text, "parse_error": None}
     try:
         parsed = json.loads(raw_text)

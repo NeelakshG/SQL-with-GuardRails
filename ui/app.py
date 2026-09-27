@@ -40,7 +40,7 @@ if ask_clicked and question.strip():
                 from pipeline import answer_question
                 result = answer_question(question)
             except OSError as e:
-                st.error(f"Could not reach the LLM (is OLLAMA_URL set and reachable?): {e}")
+                st.error(f"LLM request failed (check GROQ_API_KEY, or that Ollama is running locally): {e}")
 
     if result is not None:
         if result["blocked"]:

@@ -1,27 +1,10 @@
 import json
 import os
-import urllib.request
+import sys
 
-OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
-MODEL = "qwen2.5-coder:3b"
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "llm"))
 
-
-def _call_ollama(system, user, model=MODEL):
-    payload = {
-        "model": model,
-        "prompt": user,
-        "system": system,
-        "format": "json",
-        "stream": False,
-    }
-    req = urllib.request.Request(
-        OLLAMA_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        body = json.loads(resp.read())
-    return body.get("response", "")
+from llm_client import MODEL, call_llm  # noqa: E402
 
 
 EXPLAIN_SYSTEM_PROMPT = """You are given a single SQL query and nothing else -- you do not know what
@@ -40,7 +23,7 @@ def self_explain(sql, model=MODEL):
         result["parse_error"] = "no SQL provided"
         return result
 
-    raw = _call_ollama(EXPLAIN_SYSTEM_PROMPT, sql, model)
+    raw = call_llm(EXPLAIN_SYSTEM_PROMPT, sql, model)
     result["raw_response"] = raw
     try:
         parsed = json.loads(raw)
@@ -71,7 +54,7 @@ def judge_explanation(question, explanation, model=MODEL):
         return result
 
     user = f"Question: {question}\nExplanation: {explanation}"
-    raw = _call_ollama(JUDGE_SYSTEM_PROMPT, user, model)
+    raw = call_llm(JUDGE_SYSTEM_PROMPT, user, model)
     result["raw_response"] = raw
     try:
         parsed = json.loads(raw)
@@ -125,7 +108,7 @@ def critic(question, sql, result, model=MODEL):
         return out
 
     user = f"Question: {question}\nSQL: {sql}\nResult: {result}"
-    raw = _call_ollama(CRITIC_SYSTEM_PROMPT, user, model)
+    raw = call_llm(CRITIC_SYSTEM_PROMPT, user, model)
     out["raw_response"] = raw
     try:
         parsed = json.loads(raw)
