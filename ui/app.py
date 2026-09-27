@@ -15,7 +15,7 @@ sys.path.insert(0, ROOT)
 try:
     for key, value in st.secrets.items():
         if isinstance(value, str):
-            os.environ.setdefault(key, value)
+            os.environ[key] = value
 except Exception:
     pass  # no secrets file when running locally
 

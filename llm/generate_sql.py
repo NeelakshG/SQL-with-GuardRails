@@ -32,7 +32,7 @@ def build_system_prompt():
     return SYSTEM_PROMPT_TEMPLATE.format(schema=load_schema())
 
 
-def generate_sql(question, model=MODEL):
+def generate_sql(question, model=None):
     """Calls the LLM and returns a dict with the parsed sql/reasoning plus
     the raw response (for debugging malformed output)."""
     raw_text = call_llm(build_system_prompt(), question, model)

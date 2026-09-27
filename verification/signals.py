@@ -17,7 +17,7 @@ Respond with ONLY a JSON object of this exact shape, nothing else:
 """
 
 
-def self_explain(sql, model=MODEL):
+def self_explain(sql, model=None):
     result = {"explanation": None, "raw_response": None, "parse_error": None}
     if not sql:
         result["parse_error"] = "no SQL provided"
@@ -47,7 +47,7 @@ Respond with ONLY a JSON object of this exact shape, nothing else:
 """
 
 
-def judge_explanation(question, explanation, model=MODEL):
+def judge_explanation(question, explanation, model=None):
     result = {"score": None, "reasoning": None, "raw_response": None, "parse_error": None}
     if not explanation:
         result["parse_error"] = "no explanation to judge"
@@ -100,7 +100,7 @@ Respond with ONLY a JSON object of this exact shape, nothing else:
 """
 
 
-def critic(question, sql, result, model=MODEL):
+def critic(question, sql, result, model=None):
     out = {"has_issue": None, "issue": None, "confidence_correct": None,
            "raw_response": None, "parse_error": None}
     if not sql:

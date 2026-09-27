@@ -7,13 +7,23 @@ import json
 import os
 import urllib.request
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 
-MODEL = os.environ.get("LLM_MODEL") or (
-    "llama-3.3-70b-versatile" if GROQ_API_KEY else "qwen2.5-coder:3b"
-)
+
+# Read at call time, not import time: Streamlit hot-reloads code without
+# restarting the process, so a secret added later must still be picked up.
+def _groq_key():
+    return os.environ.get("GROQ_API_KEY")
+
+
+def default_model():
+    return os.environ.get("LLM_MODEL") or (
+        "llama-3.3-70b-versatile" if _groq_key() else "qwen2.5-coder:3b"
+    )
+
+
+MODEL = default_model()
 
 
 def _post_json(url, payload, headers):
@@ -27,8 +37,10 @@ def _post_json(url, payload, headers):
         return json.loads(resp.read())
 
 
-def call_llm(system, user, model=MODEL):
-    if GROQ_API_KEY:
+def call_llm(system, user, model=None):
+    model = model or default_model()
+    groq_key = _groq_key()
+    if groq_key:
         body = _post_json(
             GROQ_URL,
             {
@@ -40,7 +52,7 @@ def call_llm(system, user, model=MODEL):
                 "response_format": {"type": "json_object"},
                 "temperature": 0,
             },
-            {"Authorization": f"Bearer {GROQ_API_KEY}"},
+            {"Authorization": f"Bearer {groq_key}"},
         )
         return body["choices"][0]["message"]["content"]
 
