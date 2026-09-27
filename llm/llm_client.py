@@ -5,6 +5,7 @@ local Ollama server. Both are asked for JSON output; callers get the raw text.
 """
 import json
 import os
+import urllib.error
 import urllib.request
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -33,8 +34,13 @@ def _post_json(url, payload, headers):
         # Groq sits behind Cloudflare, which rejects urllib's default User-Agent.
         headers={"Content-Type": "application/json", "User-Agent": "sql-with-guardrails", **headers},
     )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return json.loads(resp.read())
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        # Surface the provider's explanation (e.g. "model does not exist"), not just the status.
+        e.msg = f"{e.msg}: {e.read().decode('utf-8', 'replace')[:300]}"
+        raise
 
 
 def call_llm(system, user, model=None):
