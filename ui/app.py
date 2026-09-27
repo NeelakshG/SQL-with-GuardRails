@@ -10,6 +10,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..")
 sys.path.insert(0, ROOT)
 
+# Streamlit Cloud secrets (GROQ_API_KEY, LLM_MODEL, ...) -> env vars, which
+# llm/llm_client.py reads. Must happen before pipeline is imported.
+try:
+    for key, value in st.secrets.items():
+        if isinstance(value, str):
+            os.environ.setdefault(key, value)
+except Exception:
+    pass  # no secrets file when running locally
+
 # If API_URL is set, go through the FastAPI server; otherwise run the
 # pipeline in-process (single-service deploys like Streamlit Cloud).
 API_URL = os.environ.get("API_URL")
