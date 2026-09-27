@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+sqlglot
+streamlit
+pandas
+requests

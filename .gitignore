@@ -12,3 +12,6 @@ logs/
 
 # Python bytecode cache
 __pycache__/
+
+# Local virtualenv
+.venv/

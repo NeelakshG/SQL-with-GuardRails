@@ -5,7 +5,7 @@ import urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCHEMA_PATH = os.path.join(HERE, "..", "db", "schema.sql")
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 MODEL = "qwen2.5-coder:3b"
 
 SYSTEM_PROMPT_TEMPLATE = """You are a SQL generator for a SQLite database. Given a natural-language question, produce a single read-only SELECT query that answers it.

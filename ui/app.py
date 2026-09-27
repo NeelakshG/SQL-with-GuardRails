@@ -1,8 +1,23 @@
+import os
+import subprocess
+import sys
+
 import pandas as pd
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000/ask"
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.join(HERE, "..")
+sys.path.insert(0, ROOT)
+
+# If API_URL is set, go through the FastAPI server; otherwise run the
+# pipeline in-process (single-service deploys like Streamlit Cloud).
+API_URL = os.environ.get("API_URL")
+
+# db/guardrails.db is gitignored, so build it on first run of a fresh deploy.
+DB_PATH = os.path.join(ROOT, "db", "guardrails.db")
+if not os.path.exists(DB_PATH):
+    subprocess.run([sys.executable, os.path.join(ROOT, "db", "seed.py")], check=True)
 
 st.set_page_config(page_title="SQL with Guardrails", layout="centered")
 st.title("Text-to-SQL with Guardrails")
@@ -12,13 +27,20 @@ ask_clicked = st.button("Ask")
 
 if ask_clicked and question.strip():
     with st.spinner("Thinking..."):
-        try:
-            resp = requests.post(API_URL, json={"question": question}, timeout=60)
-            resp.raise_for_status()
-            result = resp.json()
-        except requests.RequestException as e:
-            st.error(f"Could not reach the API: {e}")
-            result = None
+        result = None
+        if API_URL:
+            try:
+                resp = requests.post(API_URL, json={"question": question}, timeout=60)
+                resp.raise_for_status()
+                result = resp.json()
+            except requests.RequestException as e:
+                st.error(f"Could not reach the API: {e}")
+        else:
+            try:
+                from pipeline import answer_question
+                result = answer_question(question)
+            except OSError as e:
+                st.error(f"Could not reach the LLM (is OLLAMA_URL set and reachable?): {e}")
 
     if result is not None:
         if result["blocked"]:
